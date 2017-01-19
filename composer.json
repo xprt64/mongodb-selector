@@ -19,7 +19,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Gica\\Cqrs\\": "src/Gica/Cqrs/"
+      "Gica\\MongoDB\\Selector\\": "src/Gica/MongoDB/Selector/"
     }
   }
 }
