@@ -43,9 +43,13 @@ class Selector implements \IteratorAggregate, \Countable
         $this->filters[$filterId] = $filter;
     }
 
-    public function removeFilter($filter)
+    public function removeFilter($filter):self
     {
-        unset($this->filters[$filter]);
+        $other  = clone $this;
+
+        unset($other->filters[$filter]);
+
+        return $other;
     }
 
     public function skip($skip)
