@@ -8,6 +8,9 @@ namespace Gica\MongoDB\Selector;
 
 use Gica\Iterator\IteratorTransformer\IteratorMapper;
 
+/**
+ * @immutable
+ */
 class Selector implements \IteratorAggregate, \Countable
 {
     /** @var \Gica\MongoDB\Selector\Filter[] */
@@ -34,55 +37,60 @@ class Selector implements \IteratorAggregate, \Countable
         $this->collection = $collection;
     }
 
-    public function addFilter(Filter $filter, $filterId = null)
+    public function addFilter(Filter $filter, $filterId = null): self
     {
         if (null === $filterId) {
             $filterId = 'unnamed_filter_' . self::$sequence++;
         }
 
-        $this->filters[$filterId] = $filter;
+        return $this->mutate(function (self $selector) use ($filter, $filterId) {
+            $selector->filters[$filterId] = $filter;
+        });
     }
 
-    public function removeFilter($filter)
+    public function removeFilterById($filterId): self
     {
-        unset($this->filters[$filter]);
+        return $this->mutate(function (self $selector) use ($filterId) {
+            unset($selector->filters[$filterId]);
+        });
     }
 
-    public function removeFilterById($filterId)
+    public function skip($skip): self
     {
-        unset($this->filters[$filterId]);
+        return $this->mutate(function (self $selector) use ($skip) {
+            $selector->skip = $skip;
+        });
     }
 
-    public function withRemovedFilterById($filter):self
+    public function limit($limit): self
     {
-        $other  = clone $this;
-
-        $other->removeFilterById($filter);
-
-        return $other;
+        return $this->mutate(function (self $selector) use ($limit) {
+            $selector->limit = $limit;
+        });
     }
 
-    public function skip($skip)
+    private function mutate(callable $mutator): self
     {
-        $this->skip = $skip;
+        $that = clone $this;
+        $mutator($that);
+        return $that;
     }
 
-    public function limit($limit)
+    public function sort($field, $ascending): self
     {
-        $this->limit = $limit;
+        return $this->mutate(function (self $selector) use ($field, $ascending) {
+            $selector->sort[$field] = ($ascending ? 1 : -1);
+        });
     }
 
-    public function sort($field, $ascending)
+    public function clearSort(): self
     {
-        $this->sort[$field] = ($ascending ? 1 : -1);
+        return $this->mutate(function (self $selector) {
+            $selector->sort = [];
+        });
     }
 
-    public function clearSort()
-    {
-        $this->sort = [];
-    }
-
-    public function constructQuery():array
+    public function constructQuery(): array
     {
         $query = [];
 
@@ -114,13 +122,13 @@ class Selector implements \IteratorAggregate, \Countable
         return $this->collection->find($query, $options);
     }
 
-    public function fetchAsDto(callable $deserializer):array
+    public function fetchAsDto(callable $deserializer)
     {
         $cursor = $this->find();
 
         $toDto = new IteratorMapper($deserializer);
 
-        return iterator_to_array($toDto($cursor));
+        return $toDto($cursor);
     }
 
     public function count()
@@ -149,12 +157,11 @@ class Selector implements \IteratorAggregate, \Countable
         return $options;
     }
 
-    /**
-     * @param callable $iteratorMapper
-     */
-    public function setIteratorMapper($iteratorMapper)
+    public function setIteratorMapper(callable $iteratorMapper): self
     {
-        $this->iteratorMapper = $iteratorMapper;
+        return $this->mutate(function (self $selector) use ($iteratorMapper) {
+            $selector->iteratorMapper = $iteratorMapper;
+        });
     }
 
     /**
@@ -171,7 +178,7 @@ class Selector implements \IteratorAggregate, \Countable
 
     /**
      * @param $fieldName
-     * @return CountByFieldResult[]
+     * @return CountByFieldResult[]|\Iterator
      */
     public function countByField($fieldName)
     {
@@ -200,7 +207,7 @@ class Selector implements \IteratorAggregate, \Countable
 
         $cursor = $this->collection->aggregate($mongoStack);
 
-        return iterator_to_array($toDto($cursor));
+        return $toDto($cursor);
     }
 
     public function extractDistinctNestedField($fieldPath, array $distinctFields, $limit = null, $skip = null, $sortBy = null, $sortAscending = true)
