@@ -5,7 +5,7 @@ namespace Gica\MongoDB\Selector\Filter\Logical;
 
 use Gica\MongoDB\Selector\Filter;
 
-abstract class CompositeFilter
+abstract class CompositeFilter implements Filter
 {
     /**
      * @var Filter[]
