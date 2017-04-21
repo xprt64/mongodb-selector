@@ -19,6 +19,13 @@ class AndGroup implements Filter
         $this->filters = $filters;
     }
 
+    public function withAddedFilter(Filter $filter):self
+    {
+        $other = clone $this;
+        $other->filters[] = $filter;
+        return $other;
+    }
+
     public function getFields():array
     {
         $filterExpressions = [];
