@@ -203,6 +203,41 @@ class Selector implements \IteratorAggregate, \Countable
         return iterator_to_array($toDto($cursor));
     }
 
+
+    /**
+     * @param $fieldName
+     * @return float
+     */
+    public function sumField($fieldName)
+    {
+        $query = $this->constructQuery();
+
+        $mongoStack = [];
+
+        if ($query) {
+            $mongoStack[] = [
+                '$match' => $query,
+            ];
+        }
+
+        $mongoStack[] = [
+            '$group' => [
+                '_id'   => null,
+                'result' => [
+                    '$sum' =>  '$' . $fieldName,
+                ],
+            ],
+        ];
+
+        $toDto = new IteratorMapper(function ($document) {
+            return $document['result'];
+        });
+
+        $cursor = $this->collection->aggregate($mongoStack);
+
+        return iterator_to_array($toDto($cursor))[0];
+    }
+
     public function extractDistinctNestedField($fieldPath, array $distinctFields, $limit = null, $skip = null, $sortBy = null, $sortAscending = true)
     {
         $query = $this->constructQuery();
