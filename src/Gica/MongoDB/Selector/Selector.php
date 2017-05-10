@@ -203,6 +203,43 @@ class Selector implements \IteratorAggregate, \Countable
         return iterator_to_array($toDto($cursor));
     }
 
+    /**
+     * @param $fieldName
+     * @return CountByFieldResult[]
+     */
+    public function countByArrayField($fieldName)
+    {
+        $query = $this->constructQuery();
+
+        $mongoStack = [];
+
+        if ($query) {
+            $mongoStack[] = [
+                '$match' => $query,
+            ];
+        }
+        $mongoStack[] = [
+            '$unwind' => '$' . $fieldName,
+        ];
+
+        $mongoStack[] = [
+            '$group' => [
+                '_id'   => '$' . $fieldName,
+                'count' => [
+                    '$sum' => 1,
+                ],
+            ],
+        ];
+
+        $toDto = new IteratorMapper(function ($document) {
+            return new CountByFieldResult($document['_id'], $document['count']);
+        });
+
+        $cursor = $this->collection->aggregate($mongoStack);
+
+        return iterator_to_array($toDto($cursor));
+    }
+
 
     /**
      * @param $fieldName
