@@ -102,6 +102,9 @@ class Selector implements \IteratorAggregate, \Countable
     {
         foreach ($fields as $key => $field) {
             if ($key === '$and' || $key === '$or') {
+                if (!$query[$key]) {
+                    $query[$key] = [];
+                }
                 $query[$key] = array_merge($query[$key], $field);
             } else {
                 $query[$key] = $field;
