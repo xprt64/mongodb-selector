@@ -7,11 +7,13 @@ namespace Gica\MongoDB\Selector;
 
 
 use Gica\Iterator\IteratorTransformer\IteratorMapper;
+use Gica\Selector\Filter;
+use Gica\Selector\Selectable;
 
-class Selector implements \IteratorAggregate, \Countable
+class Selector implements \IteratorAggregate, Selectable
 {
-    /** @var \Gica\MongoDB\Selector\Filter[] */
-    private $filters;
+    /** @var Filter[] */
+    private $filters = [];
     private $skip;
     private $limit;
     private $sort;
@@ -30,11 +32,13 @@ class Selector implements \IteratorAggregate, \Countable
         \MongoDB\Collection $collection
     )
     {
-        $this->filters = [];
         $this->collection = $collection;
     }
 
-    public function addFilter(Filter $filter, $filterId = null): self
+    /**
+     * @inheritdoc
+     */
+    public function addFilter(Filter $filter, string $filterId = null)
     {
         if (null === $filterId) {
             $filterId = 'unnamed_filter_' . self::$sequence++;
@@ -45,21 +49,21 @@ class Selector implements \IteratorAggregate, \Countable
         });
     }
 
-    public function removeFilterById($filterId): self
+    public function removeFilterById(string $filterId)
     {
         return $this->mutate(function (self $selector) use ($filterId) {
             unset($selector->filters[$filterId]);
         });
     }
 
-    public function skip($skip): self
+    public function skip(int $skip): self
     {
         return $this->mutate(function (self $selector) use ($skip) {
             $selector->skip = $skip;
         });
     }
 
-    public function limit($limit): self
+    public function limit(int $limit): self
     {
         return $this->mutate(function (self $selector) use ($limit) {
             $selector->limit = $limit;
@@ -73,7 +77,7 @@ class Selector implements \IteratorAggregate, \Countable
         return $that;
     }
 
-    public function sort($field, $ascending): self
+    public function sort($field, bool $ascending): self
     {
         return $this->mutate(function (self $selector) use ($field, $ascending) {
             $selector->sort[$field] = ($ascending ? 1 : -1);
@@ -92,23 +96,7 @@ class Selector implements \IteratorAggregate, \Countable
         $query = [];
 
         foreach ($this->filters as $filter) {
-            $query = $this->mergeFields($query, $filter->getFields());
-        }
-
-        return $query;
-    }
-
-    private function mergeFields(array $query, $fields): array
-    {
-        foreach ($fields as $key => $field) {
-            if ($key === '$and' || $key === '$or') {
-                if (!$query[$key]) {
-                    $query[$key] = [];
-                }
-                $query[$key] = array_merge($query[$key], $field);
-            } else {
-                $query[$key] = $field;
-            }
+            $query = $filter->applyFilter($query);
         }
 
         return $query;

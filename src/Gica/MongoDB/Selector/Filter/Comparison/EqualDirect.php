@@ -6,7 +6,9 @@
 namespace Gica\MongoDB\Selector\Filter\Comparison;
 
 
-class EqualDirect implements \Gica\MongoDB\Selector\Filter
+use Gica\Selector\Filter;
+
+class EqualDirect implements Filter
 {
     private $fieldName;
     private $value;
@@ -17,11 +19,10 @@ class EqualDirect implements \Gica\MongoDB\Selector\Filter
         $this->value = $value;
     }
 
-    public function getFields():array
+    public function applyFilter(array $fields):array
     {
-        return [
-            $this->fieldName => $this->value,
+        $fields[$this->fieldName] = $this->value;
 
-        ];
+        return $fields;
     }
 }

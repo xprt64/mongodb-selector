@@ -6,7 +6,9 @@
 namespace Gica\MongoDB\Selector\Filter\Comparison;
 
 
-abstract class FieldComparisonBase implements \Gica\MongoDB\Selector\Filter
+use Gica\Selector\Filter;
+
+abstract class FieldComparisonBase implements Filter
 {
     private $fieldName;
     private $value;
@@ -19,12 +21,12 @@ abstract class FieldComparisonBase implements \Gica\MongoDB\Selector\Filter
         $this->operator = $operator;
     }
 
-    public function getFields():array
+    public function applyFilter(array $fields): array
     {
-        return [
-            $this->fieldName => [
-                $this->operator => $this->value,
-            ],
+        $fields[$this->fieldName] = [
+            $this->operator => $this->value,
         ];
+
+        return $fields;
     }
 }

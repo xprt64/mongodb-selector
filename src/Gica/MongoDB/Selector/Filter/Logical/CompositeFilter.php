@@ -3,7 +3,8 @@
 
 namespace Gica\MongoDB\Selector\Filter\Logical;
 
-use Gica\MongoDB\Selector\Filter;
+
+use Gica\Selector\Filter;
 
 abstract class CompositeFilter implements Filter
 {
@@ -24,17 +25,17 @@ abstract class CompositeFilter implements Filter
         return $other;
     }
 
-    public function getFields(): array
+    public function applyFilter(array $fields): array
     {
-        $filterExpressions = [];
-
-        foreach ($this->filters as $filter) {
-            $filterExpressions[] = $filter->getFields();
+        if (!isset($fields[$this->getToken()]) || !is_array($fields[$this->getToken()])) {
+            $fields[$this->getToken()] = [];
         }
 
-        return [
-            $this->getToken() => $filterExpressions,
-        ];
+        foreach ($this->filters as $filter) {
+            $fields[$this->getToken()][] = $filter->applyFilter([]);
+        }
+
+        return $fields;
     }
 
     abstract protected function getToken(): string;
