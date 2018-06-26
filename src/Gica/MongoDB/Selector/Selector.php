@@ -105,22 +105,33 @@ class Selector implements \IteratorAggregate, Selectable
     public function find($projection = null)
     {
         $query = $this->constructQuery();
-
         $options = $this->getFindOptions();
-
         if ($projection) {
             $options['projection'] = $projection;
         }
-
         if ($this->debug) {
             echo $this->collection->getCollectionName() . "\n";
             var_dump($query);
             var_dump($options);
             die();
         }
-
-
         return $this->collection->find($query, $options);
+    }
+
+    public function findOne($projection = null)
+    {
+        $query = $this->constructQuery();
+        $options = $this->getFindOptions();
+        if ($projection) {
+            $options['projection'] = $projection;
+        }
+        if ($this->debug) {
+            echo $this->collection->getCollectionName() . "\n";
+            var_dump($query);
+            var_dump($options);
+            die();
+        }
+        return $this->collection->findOne($query, $options);
     }
 
     public function fetchAsDto(callable $deserializer)
