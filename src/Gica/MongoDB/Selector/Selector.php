@@ -224,6 +224,150 @@ class Selector implements \IteratorAggregate, Selectable
 
     /**
      * @param $fieldName
+     * @param array $projection
+     * @return array
+     */
+    public function countByFieldWithProjection($fieldName, $projection)
+    {
+        $query = $this->constructQuery();
+
+        $mongoStack = [];
+
+        if ($query) {
+            $mongoStack[] = [
+                '$match' => $query,
+            ];
+        }
+        if (is_string($fieldName)) {
+            $id = '$' . $fieldName;
+        } else {
+            $id = [];
+            foreach ($fieldName as $k) {
+                $id[$k] = '$' . $k;
+            }
+        }
+
+        $group = [
+            '_id'   => $id,
+            'count' => [
+                '$sum' => 1,
+            ],
+        ];
+        foreach ($projection as $k => $v) {
+            $group[$k] = ['$first' => '$' . $k];
+        }
+        $mongoStack[] = [
+            '$group' => $group,
+        ];
+
+        $mongoStack[] = [
+            '$sort' => [
+                is_string($fieldName) ? $fieldName : $fieldName[0] => 1,
+            ],
+        ];
+
+        $cursor = $this->collection->aggregate($mongoStack);
+        return iterator_to_array($cursor);
+    }
+
+    /**
+     * @param $fieldName
+     * @param array $projection
+     * @return array
+     */
+    public function sumByFieldWithProjection($groupByFields, $projection, $sumField)
+    {
+        $query = $this->constructQuery();
+
+        $mongoStack = [];
+
+        if ($query) {
+            $mongoStack[] = [
+                '$match' => $query,
+            ];
+        }
+        if (is_string($groupByFields)) {
+            $id = '$' . $groupByFields;
+        } else {
+            $id = [];
+            foreach ($groupByFields as $k) {
+                $id[$k] = '$' . $k;
+            }
+        }
+
+        $group = [
+            '_id' => $id,
+            'sum' => [
+                '$sum' => '$' . $sumField,
+            ],
+        ];
+        foreach ($projection as $k => $v) {
+            $group[$k] = ['$first' => '$' . $k];
+        }
+        $mongoStack[] = [
+            '$group' => $group,
+        ];
+
+        $mongoStack[] = [
+            '$sort' => [
+                is_string($groupByFields) ? $groupByFields : $groupByFields[0] => 1,
+            ],
+        ];
+
+        $cursor = $this->collection->aggregate($mongoStack);
+        return iterator_to_array($cursor);
+    }
+
+    /**
+     * @param $fieldName
+     * @param array $projection
+     * @return array
+     */
+    public function avgByFieldWithProjection($groupByFields, $projection, $sumField)
+    {
+        $query = $this->constructQuery();
+
+        $mongoStack = [];
+
+        if ($query) {
+            $mongoStack[] = [
+                '$match' => $query,
+            ];
+        }
+        if (is_string($groupByFields)) {
+            $id = '$' . $groupByFields;
+        } else {
+            $id = [];
+            foreach ($groupByFields as $k) {
+                $id[$k] = '$' . $k;
+            }
+        }
+
+        $group = [
+            '_id' => $id,
+            'sum' => [
+                '$avg' => '$' . $sumField,
+            ],
+        ];
+        foreach ($projection as $k => $v) {
+            $group[$k] = ['$first' => '$' . $k];
+        }
+        $mongoStack[] = [
+            '$group' => $group,
+        ];
+
+        $mongoStack[] = [
+            '$sort' => [
+                is_string($groupByFields) ? $groupByFields : $groupByFields[0] => 1,
+            ],
+        ];
+
+        $cursor = $this->collection->aggregate($mongoStack);
+        return iterator_to_array($cursor);
+    }
+
+    /**
+     * @param $fieldName
      * @return CountByFieldResult[]
      */
     public function countByArrayField($fieldName)
@@ -372,10 +516,13 @@ class Selector implements \IteratorAggregate, Selectable
         $query = $this->constructQuery();
 
         $mongoStack = [
-            [
-                '$match' => $query,
-            ],
         ];
+
+        if ($query) {
+            $mongoStack[] = [
+                '$match' => $query,
+            ];
+        }
 
         $fields = explode('.', $fieldPath);
 
