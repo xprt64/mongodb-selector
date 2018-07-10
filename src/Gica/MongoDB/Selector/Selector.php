@@ -9,6 +9,7 @@ namespace Gica\MongoDB\Selector;
 use Gica\Iterator\IteratorTransformer\IteratorMapper;
 use Gica\Selector\Filter;
 use Gica\Selector\Selectable;
+use MongoDB\Collection;
 
 class Selector implements \IteratorAggregate, Selectable
 {
@@ -18,7 +19,7 @@ class Selector implements \IteratorAggregate, Selectable
     private $limit;
     private $sort;
     /**
-     * @var \MongoDB\Collection
+     * @var Collection
      */
     private $collection;
 
@@ -28,9 +29,7 @@ class Selector implements \IteratorAggregate, Selectable
 
     private $iteratorMapper = null;
 
-    public function __construct(
-        \MongoDB\Collection $collection
-    )
+    public function __construct(Collection $collection)
     {
         $this->collection = $collection;
     }
@@ -565,5 +564,12 @@ class Selector implements \IteratorAggregate, Selectable
     private function unEscapeFieldName($field)
     {
         return str_replace('____', '.', $field);
+    }
+
+    public function withCollection(Collection $collection): self
+    {
+        $other = clone $this;
+        $other->collection = $collection;
+        return $other;
     }
 }
