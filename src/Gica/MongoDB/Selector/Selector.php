@@ -19,7 +19,7 @@ class Selector implements \IteratorAggregate, Selectable
     private $limit;
     private $sort;
     /**
-     * @var Collection
+     * @var \MongoDB\Collection
      */
     private $collection;
 
@@ -29,7 +29,9 @@ class Selector implements \IteratorAggregate, Selectable
 
     private $iteratorMapper = null;
 
-    public function __construct(Collection $collection)
+    public function __construct(
+        \MongoDB\Collection $collection
+    )
     {
         $this->collection = $collection;
     }
@@ -145,8 +147,13 @@ class Selector implements \IteratorAggregate, Selectable
     public function count()
     {
         $query = $this->constructQuery();
-
         return $this->collection->count($query);
+    }
+
+    public function hasDocuments(): bool
+    {
+        $query = $this->constructQuery();
+        return !empty(iterator_to_array($this->collection->find($query, ['projection' => ['_id' => 1], 'limit' => 1, 'returnKey' => true])));
     }
 
     private function getFindOptions()
