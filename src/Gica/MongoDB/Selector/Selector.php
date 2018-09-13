@@ -588,4 +588,9 @@ class Selector implements \IteratorAggregate, Selectable
         });
         return $dto($cursor);
     }
+
+    public function fetchAsArray():array
+    {
+        return iterator_to_array($this->getIterator(), false);
+    }
 }
