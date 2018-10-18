@@ -50,6 +50,13 @@ class Selector implements \IteratorAggregate, Selectable
         });
     }
 
+    public function addConditionalFilter(bool $condition, Filter $filter, string $filterId = null): self
+    {
+        return $condition ? $this->mutate(function (self $selector) use ($filter, $filterId) {
+            $selector->filters[$filterId] = $filter;
+        }) : $this;
+    }
+
     public function removeFilterById(string $filterId)
     {
         return $this->mutate(function (self $selector) use ($filterId) {
