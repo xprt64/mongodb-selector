@@ -462,11 +462,12 @@ class Selector implements \IteratorAggregate, Selectable
         ];
 
         $fields = explode('.', $fieldPath);
-
+        $parent = '';
         foreach ($fields as $field) {
             $mongoStack[] = [
-                '$unwind' => '$' . $field,
+                '$unwind' => '$' . $parent .  $field,
             ];
+            $parent = $field . '.';
         }
 
         $group = [
@@ -590,13 +591,13 @@ class Selector implements \IteratorAggregate, Selectable
     public function fetchIds(string $theClassOfTheId)
     {
         $cursor = $this->find(['_id' => true]);
-        $dto = new IteratorMapper(function($document) use ($theClassOfTheId){
+        $dto = new IteratorMapper(function ($document) use ($theClassOfTheId) {
             return \call_user_func([$theClassOfTheId, 'fromString'], (string)$document['_id']);
         });
         return $dto($cursor);
     }
 
-    public function fetchAsArray():array
+    public function fetchAsArray(): array
     {
         return iterator_to_array($this->getIterator(), false);
     }
