@@ -99,11 +99,11 @@ class Selector implements \IteratorAggregate, Selectable
         });
     }
 
-    public function sortConditionally($condition, ?string $field, ?bool $ascending): self
+    public function sortIfNecessary(?SortCommand $sortCommand): self
     {
-        return $condition
-            ? $this->mutate(function (self $selector) use ($field, $ascending) {
-                $selector->sort[$field] = ($ascending ? 1 : -1);
+        return $sortCommand
+            ? $this->mutate(function (self $selector) use ($sortCommand) {
+                $selector->sort[$sortCommand->getField()] = ($sortCommand->isAscending() ? 1 : -1);
             })
             : $this;
     }
