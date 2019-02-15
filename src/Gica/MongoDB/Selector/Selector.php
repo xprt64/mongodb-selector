@@ -99,6 +99,15 @@ class Selector implements \IteratorAggregate, Selectable
         });
     }
 
+    public function sortIfNecessary($field, ?bool $ascending): self
+    {
+        return $field
+            ? $this->mutate(function (self $selector) use ($field, $ascending) {
+                $selector->sort[$field] = ($ascending ? 1 : -1);
+            })
+            : $this;
+    }
+
     public function clearSort(): self
     {
         return $this->mutate(function (self $selector) {
@@ -472,7 +481,7 @@ class Selector implements \IteratorAggregate, Selectable
         $parent = '';
         foreach ($fields as $field) {
             $mongoStack[] = [
-                '$unwind' => '$' . $parent .  $field,
+                '$unwind' => '$' . $parent . $field,
             ];
             $parent = $field . '.';
         }
