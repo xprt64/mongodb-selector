@@ -99,9 +99,9 @@ class Selector implements \IteratorAggregate, Selectable
         });
     }
 
-    public function sortIfNecessary($field, ?bool $ascending): self
+    public function sortConditionally($condition, ?string $field, ?bool $ascending): self
     {
-        return $field
+        return $condition
             ? $this->mutate(function (self $selector) use ($field, $ascending) {
                 $selector->sort[$field] = ($ascending ? 1 : -1);
             })
