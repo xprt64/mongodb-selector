@@ -617,4 +617,21 @@ class Selector implements \IteratorAggregate, Selectable
     {
         return iterator_to_array($this->getIterator(), false);
     }
+
+    /**
+     * @param array $mongoStack
+     * @return \Traversable
+     */
+    public function aggregate(array $mongoStack)
+    {
+        $query = $this->constructQuery();
+
+        if($query){
+            array_unshift($mongoStack, [
+                '$match' => $query,
+            ]);
+        }
+        return $this->collection->aggregate($mongoStack);
+    }
+
 }
