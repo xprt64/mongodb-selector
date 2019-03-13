@@ -52,16 +52,12 @@ class Selector implements \IteratorAggregate, Selectable
 
     public function addConditionalFilter(bool $condition, Filter $filter, string $filterId = null): self
     {
-        return $condition ? $this->mutate(function (self $selector) use ($filter, $filterId) {
-            $selector->filters[$filterId] = $filter;
-        }) : $this;
+        return $condition ?$this->addFilter($filter, $filterId) : $this;
     }
 
     public function addConditionalFilterCallback(bool $condition, callable $filterFactory, string $filterId = null): self
     {
-        return $condition ? $this->mutate(function (self $selector) use ($filterFactory, $filterId) {
-            $selector->filters[$filterId] = $filterFactory();
-        }) : $this;
+        return $condition ?$this->addFilter($filterFactory(), $filterId) : $this;
     }
 
     public function removeFilterById(string $filterId)
