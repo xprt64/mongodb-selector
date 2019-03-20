@@ -215,7 +215,7 @@ class Selector implements \IteratorAggregate, Selectable
 
     /**
      * @param $fieldName
-     * @return CountByFieldResult[]|\Iterator
+     * @return CountByFieldResult[]
      */
     public function countByField($fieldName)
     {
@@ -244,7 +244,7 @@ class Selector implements \IteratorAggregate, Selectable
 
         $cursor = $this->collection->aggregate($mongoStack);
 
-        return iterator_to_array($toDto($cursor));
+        return iterator_to_array($toDto($cursor), false);
     }
 
     /**
