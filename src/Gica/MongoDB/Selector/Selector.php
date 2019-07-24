@@ -249,6 +249,42 @@ class Selector implements \IteratorAggregate, Selectable
 
     /**
      * @param $fieldName
+     * @return CountByFieldResult[]
+     */
+    public function countByEntity($path, callable $rehydrator, string $idProp = 'id')
+    {
+        $query = $this->constructQuery();
+
+        $mongoStack = [];
+
+        if ($query) {
+            $mongoStack[] = [
+                '$match' => $query,
+            ];
+        }
+
+        $mongoStack[] = [
+            '$group' => [
+                '_id'   => '$' . $path . '.' . $idProp,
+                'entity' => ['$first' => '$' . $path],
+                'count' => [
+                    '$sum' => 1,
+                ],
+            ],
+        ];
+
+        $toDto = new IteratorMapper(function ($document) use ($rehydrator){
+
+            return new CountByFieldResult($document['entity'] ? $rehydrator($document['entity']) : null, $document['count']);
+        });
+
+        $cursor = $this->collection->aggregate($mongoStack);
+
+        return iterator_to_array($toDto($cursor), false);
+    }
+
+    /**
+     * @param $fieldName
      * @param array $projection
      * @return array
      */
