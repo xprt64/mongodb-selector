@@ -645,6 +645,17 @@ class Selector implements \IteratorAggregate, Selectable
         return $dto($cursor);
     }
 
+    public function deleteSelected()
+    {
+        $query = $this->constructQuery();
+         if ($this->debug) {
+            echo $this->collection->getCollectionName() . "\n";
+            var_dump($query);
+            die();
+        }
+        return $this->collection->deleteMany($query);
+    }
+
     public function fetchAsArray(): array
     {
         return iterator_to_array($this->getIterator(), false);
