@@ -645,7 +645,7 @@ class Selector implements \IteratorAggregate, Selectable
         return $dto($cursor);
     }
 
-    public function deleteSelected()
+    public function deleteMany()
     {
         $query = $this->constructQuery();
          if ($this->debug) {
