@@ -10,7 +10,7 @@
     }
   ],
    "require": {
-    "php": "^7.0",
+    "php": "^7.0 || ^8.0",
     "mongodb/mongodb": "^1.0.0",
     "xprt64/iterator": "^1.0",
     "xprt64/selector": "^0.0.3"
