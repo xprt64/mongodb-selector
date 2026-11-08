@@ -163,7 +163,7 @@ class Selector implements \IteratorAggregate, Selectable
         return $toDto($cursor);
     }
 
-    public function count()
+    public function count(): int
     {
         $query = $this->constructQuery();
         return $this->collection->countDocuments($query);
@@ -204,7 +204,7 @@ class Selector implements \IteratorAggregate, Selectable
     /**
      * @inheritdoc
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $cursor = $this->find();
         if (is_callable($this->iteratorMapper)) {

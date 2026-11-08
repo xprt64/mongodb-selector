@@ -23,7 +23,7 @@ class CountableIterator implements \Countable, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function count()
+    public function count(): int
     {
         return $this->selector->count();
     }
@@ -31,7 +31,7 @@ class CountableIterator implements \Countable, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->selector->find();
     }
