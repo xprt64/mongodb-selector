@@ -39,7 +39,7 @@ class Selector implements \IteratorAggregate, Selectable
     /**
      * @inheritdoc
      */
-    public function addFilter(Filter $filter, string $filterId = null)
+    public function addFilter(Filter $filter, ?string $filterId = null)
     {
         if (null === $filterId) {
             $filterId = 'unnamed_filter_' . self::$sequence++;
@@ -50,12 +50,12 @@ class Selector implements \IteratorAggregate, Selectable
         });
     }
 
-    public function addConditionalFilter(bool $condition, Filter $filter, string $filterId = null): self
+    public function addConditionalFilter(bool $condition, Filter $filter, ?string $filterId = null): self
     {
         return $condition ?$this->addFilter($filter, $filterId) : $this;
     }
 
-    public function addConditionalFilterCallback(bool $condition, callable $filterFactory, string $filterId = null): self
+    public function addConditionalFilterCallback(bool $condition, callable $filterFactory, ?string $filterId = null): self
     {
         return $condition ?$this->addFilter($filterFactory(), $filterId) : $this;
     }
@@ -166,7 +166,7 @@ class Selector implements \IteratorAggregate, Selectable
     public function count()
     {
         $query = $this->constructQuery();
-        return $this->collection->count($query);
+        return $this->collection->countDocuments($query);
     }
 
     public function hasDocuments(): bool
