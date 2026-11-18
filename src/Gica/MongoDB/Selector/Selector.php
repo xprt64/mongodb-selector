@@ -32,6 +32,7 @@ class Selector implements \IteratorAggregate, Selectable
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function addFilter(Filter $filter, ?string $filterId = null)
     {
         if (null === $filterId) {
@@ -53,6 +54,7 @@ class Selector implements \IteratorAggregate, Selectable
         return $condition ?$this->addFilter($filterFactory(), $filterId) : $this;
     }
 
+    #[\Override]
     public function removeFilterById(string $filterId)
     {
         return $this->mutate(function (self $selector) use ($filterId) {
@@ -60,6 +62,7 @@ class Selector implements \IteratorAggregate, Selectable
         });
     }
 
+    #[\Override]
     public function skip(int $skip): self
     {
         return $this->mutate(function (self $selector) use ($skip) {
@@ -67,6 +70,7 @@ class Selector implements \IteratorAggregate, Selectable
         });
     }
 
+    #[\Override]
     public function limit(int $limit): self
     {
         return $this->mutate(function (self $selector) use ($limit) {
@@ -81,6 +85,7 @@ class Selector implements \IteratorAggregate, Selectable
         return $that;
     }
 
+    #[\Override]
     public function sort($field, bool $ascending): self
     {
         return $this->mutate(function (self $selector) use ($field, $ascending) {
@@ -156,6 +161,7 @@ class Selector implements \IteratorAggregate, Selectable
         return $toDto($cursor);
     }
 
+    #[\Override]
     public function count(): int
     {
         $query = $this->constructQuery();
@@ -197,6 +203,7 @@ class Selector implements \IteratorAggregate, Selectable
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getIterator(): \Traversable
     {
         $cursor = $this->find();
@@ -603,12 +610,12 @@ class Selector implements \IteratorAggregate, Selectable
         return reset($result)['count'];
     }
 
-    private function escapeFieldName($field)
+    private function escapeFieldName($field): string|array
     {
         return str_replace('.', '____', $field);
     }
 
-    private function unEscapeFieldName($field)
+    private function unEscapeFieldName($field): string|array
     {
         return str_replace('____', '.', $field);
     }

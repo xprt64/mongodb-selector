@@ -7,6 +7,7 @@ namespace Gica\MongoDB\Selector\Filter\Logical;
 
 class AndGroup extends CompositeFilter
 {
+    #[\Override]
     protected function getToken(): string
     {
         return '$and';

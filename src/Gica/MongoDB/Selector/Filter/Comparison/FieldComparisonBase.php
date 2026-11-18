@@ -14,6 +14,7 @@ abstract class FieldComparisonBase implements Filter
     {
     }
 
+    #[\Override]
     public function applyFilter(array $fields): array
     {
         $fields[$this->fieldName] = [

@@ -15,6 +15,7 @@ class CountableIterator implements \Countable, \IteratorAggregate
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function count(): int
     {
         return $this->selector->count();
@@ -23,6 +24,7 @@ class CountableIterator implements \Countable, \IteratorAggregate
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getIterator(): \Traversable
     {
         return $this->selector->find();

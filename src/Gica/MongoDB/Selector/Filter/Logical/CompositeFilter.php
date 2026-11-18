@@ -25,6 +25,7 @@ abstract class CompositeFilter implements Filter
         return $other;
     }
 
+    #[\Override]
     public function applyFilter(array $fields): array
     {
         if (!isset($fields[$this->getToken()]) || !is_array($fields[$this->getToken()])) {
