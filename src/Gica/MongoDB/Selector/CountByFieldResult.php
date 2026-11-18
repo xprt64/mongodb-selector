@@ -8,19 +8,8 @@ namespace Gica\MongoDB\Selector;
 
 class CountByFieldResult
 {
-    private $value;
-    /**
-     * @var int
-     */
-    private $count;
-
-    public function __construct(
-        $value,
-        int $count
-    )
+    public function __construct(private $value, private int $count)
     {
-        $this->value = $value;
-        $this->count = $count;
     }
 
     public function getValue()

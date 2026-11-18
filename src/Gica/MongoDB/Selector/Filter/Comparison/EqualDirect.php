@@ -10,13 +10,8 @@ use Gica\Selector\Filter;
 
 class EqualDirect implements Filter
 {
-    private $fieldName;
-    private $value;
-
-    public function __construct(string $fieldName, $value)
+    public function __construct(private string $fieldName, private $value)
     {
-        $this->fieldName = $fieldName;
-        $this->value = $value;
     }
 
     public function applyFilter(array $fields):array

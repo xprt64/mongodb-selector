@@ -8,16 +8,8 @@ namespace Gica\MongoDB\Selector;
 
 class CountableIterator implements \Countable, \IteratorAggregate
 {
-    /**
-     * @var Selector
-     */
-    private $selector;
-
-    public function __construct(
-        Selector $selector
-    )
+    public function __construct(private Selector $selector)
     {
-        $this->selector = $selector;
     }
 
     /**

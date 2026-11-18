@@ -18,10 +18,6 @@ class Selector implements \IteratorAggregate, Selectable
     private $skip;
     private $limit;
     private $sort;
-    /**
-     * @var \MongoDB\Collection
-     */
-    private $collection;
 
     static $sequence = 0;
 
@@ -29,11 +25,8 @@ class Selector implements \IteratorAggregate, Selectable
 
     private $iteratorMapper = null;
 
-    public function __construct(
-        \MongoDB\Collection $collection
-    )
+    public function __construct(private \MongoDB\Collection $collection)
     {
-        $this->collection = $collection;
     }
 
     /**

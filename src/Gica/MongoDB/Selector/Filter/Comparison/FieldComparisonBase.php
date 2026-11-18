@@ -10,15 +10,8 @@ use Gica\Selector\Filter;
 
 abstract class FieldComparisonBase implements Filter
 {
-    private $fieldName;
-    private $value;
-    private $operator;
-
-    public function __construct(string $fieldName, $operator, $value)
+    public function __construct(private string $fieldName, private $operator, private $value)
     {
-        $this->fieldName = $fieldName;
-        $this->value = $value;
-        $this->operator = $operator;
     }
 
     public function applyFilter(array $fields): array
