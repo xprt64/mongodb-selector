@@ -238,9 +238,7 @@ class Selector implements \IteratorAggregate, Selectable
             ],
         ];
 
-        $toDto = new IteratorMapper(function ($document) {
-            return new CountByFieldResult($document['_id'], $document['count']);
-        });
+        $toDto = new IteratorMapper(fn($document) => new CountByFieldResult($document['_id'], $document['count']));
 
         $cursor = $this->collection->aggregate($mongoStack);
 
@@ -273,10 +271,7 @@ class Selector implements \IteratorAggregate, Selectable
             ],
         ];
 
-        $toDto = new IteratorMapper(function ($document) use ($rehydrator){
-
-            return new CountByFieldResult($document['entity'] ? $rehydrator($document['entity']) : null, $document['count']);
-        });
+        $toDto = new IteratorMapper(fn($document) => new CountByFieldResult($document['entity'] ? $rehydrator($document['entity']) : null, $document['count']));
 
         $cursor = $this->collection->aggregate($mongoStack);
 
@@ -455,9 +450,7 @@ class Selector implements \IteratorAggregate, Selectable
             ],
         ];
 
-        $toDto = new IteratorMapper(function ($document) {
-            return new CountByFieldResult($document['_id'], $document['count']);
-        });
+        $toDto = new IteratorMapper(fn($document) => new CountByFieldResult($document['_id'], $document['count']));
 
         $cursor = $this->collection->aggregate($mongoStack);
 
@@ -490,9 +483,7 @@ class Selector implements \IteratorAggregate, Selectable
             ],
         ];
 
-        $toDto = new IteratorMapper(function ($document) {
-            return $document['result'];
-        });
+        $toDto = new IteratorMapper(fn($document) => $document['result']);
 
         $cursor = $this->collection->aggregate($mongoStack);
 
@@ -639,9 +630,7 @@ class Selector implements \IteratorAggregate, Selectable
     public function fetchIds(string $theClassOfTheId)
     {
         $cursor = $this->find(['_id' => true]);
-        $dto = new IteratorMapper(function ($document) use ($theClassOfTheId) {
-            return \call_user_func([$theClassOfTheId, 'fromString'], (string)$document['_id']);
-        });
+        $dto = new IteratorMapper(fn($document) => \call_user_func([$theClassOfTheId, 'fromString'], (string)$document['_id']));
         return $dto($cursor);
     }
 
